@@ -11,7 +11,7 @@ port=$2
 
 mv ~/slurm-$id.out ~/obstacle/obstacle
 
-token=$(cat slurm-$id.out | tail -n 2 | head -n 1)
+token=$(cat slurm-$id.out | tail -n 2 | head -n 1 | sed 's/.*token=//')
 
 rm -f slurm-$id.out  
 

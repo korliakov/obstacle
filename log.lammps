@@ -135,20 +135,20 @@ Step Temp E_pair E_mol TotEng Press Volume
    23000            1  -0.39249509            0   0.29411089   0.97187435    1459.6771 
    24000            1  -0.33410442            0   0.35250156   0.93960021    1463.5903 
    25000            1  -0.37437615            0   0.31222983    0.9644765    1464.9391 
-Loop time of 1.61836 on 1 procs for 25000 steps with 769 atoms
+Loop time of 3.6038 on 1 procs for 25000 steps with 769 atoms
 
-Performance: 4004056.764 tau/day, 15447.750 timesteps/s
-99.5% CPU use with 1 MPI tasks x no OpenMP threads
+Performance: 1798102.585 tau/day, 6937.124 timesteps/s
+43.9% CPU use with 1 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.43181    | 0.43181    | 0.43181    |   0.0 | 26.68
-Neigh   | 0.14601    | 0.14601    | 0.14601    |   0.0 |  9.02
-Comm    | 0.021764   | 0.021764   | 0.021764   |   0.0 |  1.34
-Output  | 0.15857    | 0.15857    | 0.15857    |   0.0 |  9.80
-Modify  | 0.77797    | 0.77797    | 0.77797    |   0.0 | 48.07
-Other   |            | 0.08223    |            |       |  5.08
+Pair    | 0.42114    | 0.42114    | 0.42114    |   0.0 | 11.69
+Neigh   | 0.1427     | 0.1427     | 0.1427     |   0.0 |  3.96
+Comm    | 0.021428   | 0.021428   | 0.021428   |   0.0 |  0.59
+Output  | 2.1682     | 2.1682     | 2.1682     |   0.0 | 60.16
+Modify  | 0.7707     | 0.7707     | 0.7707     |   0.0 | 21.39
+Other   |            | 0.07961    |            |       |  2.21
 
 Nlocal:        769.000 ave         769 max         769 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -161,4 +161,4 @@ Total # of neighbors = 1618
 Ave neighs/atom = 2.1040312
 Neighbor list builds = 1622
 Dangerous builds = 0
-Total wall time: 0:00:01
+Total wall time: 0:00:03
