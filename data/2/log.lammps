@@ -1,0 +1,144 @@
+LAMMPS (29 Sep 2021 - Update 2)
+# 2d LJ obstacle flow
+
+dimension	2
+boundary	p s p
+
+atom_style	atomic
+neighbor	0.3 bin
+neigh_modify	delay 5
+
+# create geometry
+
+lattice		hex 0.7
+Lattice spacing in x,y,z = 1.2843567 2.2245711 1.2843567
+region		box block 0 40 0 10 -0.25 0.25
+create_box	3 box
+Created orthogonal box = (0.0000000 0.0000000 -0.32108918) to (51.374269 22.245711 0.32108918)
+  1 by 1 by 1 MPI processor grid
+create_atoms	1 box
+Created 840 atoms
+  using lattice units in orthogonal box = (0.0000000 -0.0022245711 -0.32108918) to (51.374269 22.247936 0.32108918)
+  create_atoms CPU = 0.000 seconds
+
+mass		1 1.0
+mass		2 1.0
+mass		3 1.0
+
+# LJ potentials
+
+pair_style	lj/cut 1.0
+pair_coeff	* * 1.0 1.0 1.0
+
+# define groups
+
+region	        1 block INF INF INF 1.25 INF INF
+group		lower region 1
+120 atoms in group lower
+region		2 block INF INF 8.75 INF INF INF
+group		upper region 2
+120 atoms in group upper
+group		boundary union lower upper
+240 atoms in group boundary
+group		flow subtract all boundary
+600 atoms in group flow
+
+set		group lower type 2
+Setting atom values ...
+  120 settings made for type
+set		group upper type 3
+Setting atom values ...
+  120 settings made for type
+
+# initial velocities
+
+compute	        mobile flow temp
+velocity	flow create 1.0 482748 temp mobile
+fix		1 all nve
+fix		2 flow temp/rescale 200 1.0 1.0 0.02 1.0
+fix_modify	2 temp mobile
+
+# Poiselle flow
+
+velocity	boundary set 0.0 0.0 0.0
+fix		3 lower setforce 0.0 0.0 0.0
+fix		4 upper setforce 0.0 NULL 0.0
+fix		5 upper aveforce 0.0 -0.5 0.0
+fix		6 flow addforce 1.0 0.0 0.0
+
+# 2 obstacles
+
+region		void1 sphere 10 4 0 3
+delete_atoms	region void1
+Deleted 36 atoms, new total = 804
+region		void2 sphere 20 7 0 3
+delete_atoms	region void2
+Deleted 35 atoms, new total = 769
+
+fix		7 flow indent 100 sphere 10 4 0 4
+fix		8 flow indent 100 sphere 20 7 0 4
+fix		9 all enforce2d
+
+# Run
+
+timestep	0.003
+thermo		1000
+thermo_modify	temp mobile
+WARNING: Temperature for thermo pressure is not for group all (../thermo.cpp:482)
+
+dump		1 all atom 100 dump.obstacle
+
+#dump		2 all image 500 image.*.jpg type type #		zoom 1.6 adiam 1.5
+#dump_modify	2 pad 5
+
+#dump		3 all movie 500 movie.mpg type type #		zoom 1.6 adiam 1.5
+#dump_modify	3 pad 5
+
+run		5000
+Neighbor list info ...
+  update every 1 steps, delay 5 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 1.3
+  ghost atom cutoff = 1.3
+  binsize = 0.65, bins = 80 35 1
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/2d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.087 | 4.087 | 4.087 Mbytes
+Step Temp E_pair E_mol TotEng Press Volume 
+       0    1.0027471            0            0   0.68849216   0.46317653    1143.0857 
+    1000            1  0.039325306            0   0.72593129     1.077197    1283.1136 
+    2000            1   0.03685638            0   0.72346236    1.2402723    1298.0424 
+    3000            1  0.047940915            0    0.7345469    1.5154108      1293.71 
+    4000            1  0.048161961            0   0.73476794    1.5475565    1338.1292 
+    5000            1  0.038676295            0   0.72528228    1.3080866    1379.5946 
+Loop time of 0.291675 on 1 procs for 5000 steps with 769 atoms
+
+Performance: 4443299.030 tau/day, 17142.357 timesteps/s
+99.5% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.058069   | 0.058069   | 0.058069   |   0.0 | 19.91
+Neigh   | 0.027936   | 0.027936   | 0.027936   |   0.0 |  9.58
+Comm    | 0.0044286  | 0.0044286  | 0.0044286  |   0.0 |  1.52
+Output  | 0.031135   | 0.031135   | 0.031135   |   0.0 | 10.67
+Modify  | 0.15348    | 0.15348    | 0.15348    |   0.0 | 52.62
+Other   |            | 0.01663    |            |       |  5.70
+
+Nlocal:        769.000 ave         769 max         769 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        49.0000 ave          49 max          49 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        1582.00 ave        1582 max        1582 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1582
+Ave neighs/atom = 2.0572172
+Neighbor list builds = 341
+Dangerous builds = 1
+Total wall time: 0:00:00
